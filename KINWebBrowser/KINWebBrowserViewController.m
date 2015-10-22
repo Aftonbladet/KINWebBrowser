@@ -40,7 +40,7 @@ static void *KINWebBrowserContext = &KINWebBrowserContext;
 @interface KINWebBrowserViewController () <UIAlertViewDelegate>
 
 @property (nonatomic, assign) BOOL previousNavigationControllerToolbarHidden, previousNavigationControllerNavigationBarHidden;
-@property (nonatomic, strong) UIBarButtonItem *backButton, *forwardButton, *refreshButton, *stopButton, *actionButton, *fixedSeparator, *flexibleSeparator;
+@property (nonatomic, strong) UIBarButtonItem *backButton, *forwardButton, *refreshButton, *stopButton, *actionButton, *fixedSeparator, *flexibleSeparator, *closeButton;
 @property (nonatomic, strong) NSTimer *fakeProgressTimer;
 @property (nonatomic, strong) UIPopoverController *actionPopoverController;
 @property (nonatomic, assign) BOOL uiWebViewIsLoading;
@@ -380,11 +380,14 @@ static void *KINWebBrowserContext = &KINWebBrowserContext;
         }
     }
     
+    NSMutableArray *mutableBarButtonItems = [NSMutableArray arrayWithArray:barButtonItems];
     if(!self.actionButtonHidden) {
-        NSMutableArray *mutableBarButtonItems = [NSMutableArray arrayWithArray:barButtonItems];
         [mutableBarButtonItems addObject:self.actionButton];
-        barButtonItems = [NSArray arrayWithArray:mutableBarButtonItems];
+    } else {
+        [mutableBarButtonItems addObject:self.closeButton];
+        self.navigationItem.rightBarButtonItems = nil;
     }
+    barButtonItems = [NSArray arrayWithArray:mutableBarButtonItems];
     
     [self setToolbarItems:barButtonItems animated:YES];
     
@@ -409,6 +412,9 @@ static void *KINWebBrowserContext = &KINWebBrowserContext;
     self.fixedSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     self.fixedSeparator.width = 50.0f;
     self.flexibleSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(doneButtonPressed:)];
+    self.closeButton.tintColor = [[UIColor redColor] colorWithAlphaComponent:0.7];
 }
 
 #pragma mark - Done Button Action
